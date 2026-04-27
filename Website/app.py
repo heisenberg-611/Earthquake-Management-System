@@ -1,7 +1,8 @@
 import os
 from functools import wraps
 from flask import Flask, render_template, request, flash, redirect, url_for, session
-from db import get_db_connection, init_db_if_not_exists
+from db import get_db_connection
+# init_db_if_not_exists
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
