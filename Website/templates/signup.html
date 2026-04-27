@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - Earthquake Management System{% endblock %}
+
+{% block content %}
+<div style="margin: 60px auto; max-width: 400px;">
+    <h2>{{ role }} Registration</h2>
+    <p style="margin-bottom: 24px;">Create an account to track metrics or register as a volunteer.</p>
+    
+    <div class="card">
+        <form method="POST" style="display: flex; flex-direction: column; gap: 16px;">
+            <div>
+                <label for="name" style="font-weight: 500; font-size: 14px; display: block; margin-bottom: 8px;">Full Name</label>
+                <input type="text" id="name" name="name" required style="width: 100%; padding: 10px; border: 1px solid var(--border-medium); border-radius: 8px; font-family: var(--font-ui); background: var(--surface-100);">
+            </div>
+            
+            <div>
+                <label for="email" style="font-weight: 500; font-size: 14px; display: block; margin-bottom: 8px;">Email Address</label>
+                <input type="email" id="email" name="email" required style="width: 100%; padding: 10px; border: 1px solid var(--border-medium); border-radius: 8px; font-family: var(--font-ui); background: var(--surface-100);">
+            </div>
+            
+            <div>
+                <label for="password" style="font-weight: 500; font-size: 14px; display: block; margin-bottom: 8px;">Password</label>
+                <input type="password" id="password" name="password" required style="width: 100%; padding: 10px; border: 1px solid var(--border-medium); border-radius: 8px; font-family: var(--font-ui); background: var(--surface-100);">
+            </div>
+            
+            {% if role == 'User' %}
+            <div>
+                <label for="region" style="font-weight: 500; font-size: 14px; display: block; margin-bottom: 8px;">Region</label>
+                <input type="text" id="region" name="region" placeholder="(e.g., Central Valley)" style="width: 100%; padding: 10px; border: 1px solid var(--border-medium); border-radius: 8px; font-family: var(--font-ui); background: var(--surface-100);">
+            </div>
+            {% endif %}
+            
+            <button type="submit" class="btn" style="width: 100%; margin-top: 8px;">Create Account</button>
+        </form>
+    </div>
+    
+    <div style="margin-top: 24px; font-size: 14px; text-align: center;">
+        <p>Already have an account? <a href="{{ url_for('login') }}">Sign in instead.</a></p>
+    </div>
+</div>
+{% endblock %}

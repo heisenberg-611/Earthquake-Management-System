@@ -1,0 +1,79 @@
+CREATE DATABASE IF NOT EXISTS earthquake_db;
+USE earthquake_db;
+
+-- 1. PERSON (Super Entity)
+CREATE TABLE IF NOT EXISTS Person (
+    PersonID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(100) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Password VARCHAR(255) NOT NULL
+);
+
+-- 2. ADMIN (Child of Person)
+CREATE TABLE IF NOT EXISTS Admin (
+    AdminID INT PRIMARY KEY,
+    FOREIGN KEY (AdminID) REFERENCES Person(PersonID) ON DELETE CASCADE
+);
+
+-- 3. USER (Child of Person)
+CREATE TABLE IF NOT EXISTS User (
+    UserID INT PRIMARY KEY,
+    Region VARCHAR(100),
+    FOREIGN KEY (UserID) REFERENCES Person(PersonID) ON DELETE CASCADE
+);
+
+-- 4. EARTHQUAKE_EVENT
+CREATE TABLE IF NOT EXISTS Earthquake_Event (
+    EventID INT PRIMARY KEY AUTO_INCREMENT,
+    Magnitude DECIMAL(4,2) NOT NULL,
+    Depth DECIMAL(6,2) NOT NULL,
+    Coordinates VARCHAR(100) NOT NULL,
+    AffectedArea VARCHAR(150),
+    Status ENUM('Verified', 'Unverified') DEFAULT 'Unverified',
+    Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    AdminID INT NOT NULL,
+    FOREIGN KEY (AdminID) REFERENCES Admin(AdminID)
+);
+
+-- 5. VOLUNTEER
+CREATE TABLE IF NOT EXISTS Volunteer (
+    VolunteerID INT PRIMARY KEY AUTO_INCREMENT,
+    Skills VARCHAR(255),
+    AssignmentStatus ENUM('Standby', 'Deployed', 'Returned') DEFAULT 'Standby',
+    UserID INT UNIQUE NOT NULL,
+    AdminID INT,
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (AdminID) REFERENCES Admin(AdminID) ON DELETE SET NULL
+);
+
+-- 6. EVACUATION_ROUTE
+CREATE TABLE IF NOT EXISTS Evacuation_Route (
+    RouteID INT PRIMARY KEY AUTO_INCREMENT,
+    StartPoint VARCHAR(150) NOT NULL,
+    EndPoint VARCHAR(150) NOT NULL,
+    Distance DECIMAL(6,2),
+    RoadType VARCHAR(100),
+    Status ENUM('Open', 'Blocked', 'Damaged', 'Under Repair') DEFAULT 'Open',
+    AdminID INT NOT NULL,
+    FOREIGN KEY (AdminID) REFERENCES Admin(AdminID)
+);
+
+-- 7. USER_SEARCHES_EVENT (M to N)
+CREATE TABLE IF NOT EXISTS User_Searches_Event (
+    UserID INT,
+    EventID INT,
+    SearchedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (UserID, EventID),
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (EventID) REFERENCES Earthquake_Event(EventID) ON DELETE CASCADE
+);
+
+-- 8. USER_VIEWS_ROUTE (M to N)
+CREATE TABLE IF NOT EXISTS User_Views_Route (
+    UserID INT,
+    RouteID INT,
+    ViewedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (UserID, RouteID),
+    FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE,
+    FOREIGN KEY (RouteID) REFERENCES Evacuation_Route(RouteID) ON DELETE CASCADE
+);

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Earthquake Management System{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('welcome') }}" class="nav-brand">Earthquake Management System</a>
+        <div class="nav-links">
+            {% if session.get('user_id') %}
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('events') }}">Events</a>
+            <a href="{{ url_for('volunteers') }}">Volunteers</a>
+            <a href="{{ url_for('routes') }}">Routes</a>
+            {% endif %}
+            <span style="border-left: 1px solid var(--border-medium); margin: 0 8px;"></span>
+            {% if session.get('user_id') %}
+                <span style="font-family: var(--font-ui); font-size: 14px; font-weight: 500; align-self: center; color: var(--color-success);">{{ session.get('name') }} ({{ session.get('role') }})</span>
+                <a href="{{ url_for('logout') }}" style="color: var(--color-error);">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="alerts">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

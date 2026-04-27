@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Earthquake Management System{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Administrator<br>Dashboard</h1>
+    <p class="card-body">Manage regional seismic activities, coordinate emergency volunteers, and monitor evacuation route logistics.</p>
+</div>
+
+<div class="grid">
+    <div class="card">
+        <div class="card-title">Total Events</div>
+        <div class="card-body" style="font-family: var(--font-heading); font-size: 32px; font-weight: 500; color: var(--color-dark);">
+            {{ total_events }}
+        </div>
+        <p style="margin-top: 8px; font-size: 14px;">Historical seismic records</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Verified Incidents</div>
+        <div class="card-body" style="font-family: var(--font-heading); font-size: 32px; font-weight: 500; color: var(--color-success);">
+            {{ verified_events }}
+        </div>
+        <p style="margin-top: 8px; font-size: 14px;">Events cleared by administration</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Active Volunteers</div>
+        <div class="card-body" style="font-family: var(--font-heading); font-size: 32px; font-weight: 500; color: var(--color-accent);">
+            {{ total_volunteers }}
+        </div>
+        <p style="margin-top: 8px; font-size: 14px;">Personnel active</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Disrupted Routes</div>
+        <div class="card-body" style="font-family: var(--font-heading); font-size: 32px; font-weight: 500; color: var(--color-error);">
+            {{ disrupted_routes }}
+        </div>
+        <p style="margin-top: 8px; font-size: 14px;">Routes blocked or damaged</p>
+    </div>
+</div>
+
+<div style="margin-top: 48px; text-align: center;">
+    <a href="{{ url_for('events') }}" class="btn" style="margin-right: 12px;">Manage Events</a>
+    <a href="{{ url_for('volunteers') }}" class="btn" style="margin-right: 12px;">Deploy Volunteers</a>
+    <a href="{{ url_for('signup_admin') }}" class="btn" style="background-color: transparent; border: 1px solid var(--border-medium);">+ Register Admin</a>
+</div>
+
+{% endblock %}

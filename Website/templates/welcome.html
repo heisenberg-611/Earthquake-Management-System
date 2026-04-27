@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome - Earthquake Management System{% endblock %}
+
+{% block content %}
+<div class="voda-hero">
+    <div class="voda-hero-content">
+        <h1>TaTuBo</h1>
+        <p>
+            A comprehensive disaster response platform designed to rapidly connect those in need with critical resources. TaTuBo facilitates immediate crisis assistance, safe evacuation routing, and coordinated volunteer deployment in the critical hours following severe seismic events.
+        </p>
+
+        {% if not session.get('user_id') %}
+        <div style="margin-top: 32px;">
+            <a href="{{ url_for('signup_user') }}" class="voda-btn-pill">CREATE USER ACCOUNT</a>
+        </div>
+        {% else %}
+        <div style="margin-top: 32px;">
+            <a href="{{ url_for('dashboard') }}" class="voda-btn-pill">PROCEED TO DASHBOARD</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="voda-red-band"></div>
+
+
+{% endblock %}

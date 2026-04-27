@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Events - Earthquake Management System{% endblock %}
+
+{% block content %}
+<div style="margin: 40px 0 24px; display: flex; justify-content: space-between; align-items: flex-end;">
+    <div>
+        <h2>Seismic Events</h2>
+        <p>Log of verified and unverified earthquake events processed by the administration.</p>
+    </div>
+    {% if session.get('role') == 'Admin' %}
+    <a href="{{ url_for('add_event') }}" class="btn">Add Event</a>
+    {% endif %}
+</div>
+
+<div class="card" style="padding: 0;">
+    <table class="data-table" style="margin-top: 0; border: none; box-shadow: none;">
+        <thead>
+            <tr>
+                <th class="sortable">ID</th>
+                <th class="sortable">Magnitude (Mw)</th>
+                <th class="sortable">Depth (km)</th>
+                <th class="sortable">Location</th>
+                <th class="sortable">Affected Area</th>
+                <th class="sortable">Time Recorded</th>
+                <th class="sortable">Status</th>
+                {% if session.get('role') == 'Admin' %}<th>Actions</th>{% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td style="font-family: var(--font-mono); font-size: 14px;">#{{ event.EventID }}</td>
+                <td style="font-weight: 500;">{{ event.Magnitude }}</td>
+                <td>{{ event.Depth }}</td>
+                <td style="font-family: var(--font-mono); font-size: 14px;">{{ event.Coordinates }}</td>
+                <td>{{ event.AffectedArea }}</td>
+                <td style="font-family: var(--font-mono); font-size: 14px;">{{ event.Timestamp }}</td>
+                <td>
+                    {% if event.Status == 'Verified' %}
+                        <span class="pill status-verified" style="background-color: #e2f0eb; color: var(--color-success);">{{ event.Status }}</span>
+                    {% else %}
+                        <span class="pill status-unverified" style="background-color: #ffecd9; color: var(--color-accent);">{{ event.Status }}</span>
+                    {% endif %}
+                </td>
+                {% if session.get('role') == 'Admin' %}
+                <td>
+                    <a href="{{ url_for('edit_event', id=event.EventID) }}" style="font-size: 14px; margin-right: 8px;">Edit</a>
+                    <form method="POST" action="{{ url_for('delete_event', id=event.EventID) }}" style="display:inline;">
+                        <button type="submit" style="background:none; border:none; color:var(--color-error); cursor:pointer; font-size: 14px; font-family: var(--font-ui);">Delete</button>
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center; color: rgba(38,37,30,0.55);">No events recorded in database</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}User Dashboard - Earthquake Management System{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Earthquake Monitoring<br>Center</h1>
+    <p class="card-body">Stay safe exactly where you are by checking evacuation routes and historical event reports safely online.</p>
+</div>
+
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
+    <div class="card">
+        <div class="card-title">Evacuation Intelligence</div>
+        <p class="card-body" style="font-size: 15px; margin-top: 8px;">
+            The administration tracks open evacuation paths in real time. Access this module to see what paths stand open out of disrupted regions.
+        </p>
+        <a href="{{ url_for('routes') }}" class="btn" style="margin-top: 16px;">View Routes</a>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Volunteer Taskforce</div>
+        <p class="card-body" style="font-size: 15px; margin-top: 8px;">
+            Got specialized skills? The Earth is constantly shifting, and we are counting on dedicated volunteers like you!
+        </p>
+        <a href="{{ url_for('volunteers') }}" class="btn" style="margin-top: 16px;">Check Your Status</a>
+    </div>
+</div>
+
+{% endblock %}

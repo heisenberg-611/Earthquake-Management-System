@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Earthquake Management System{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Earthquake Management<br>Dashboard</h1>
+    <p class="card-body">A sophisticated system to track seismic activities, coordinate emergency volunteers, and
+        monitor evacuation routes in real-time.</p>
+</div>
+
+<div class="grid">
+    <div class="card">
+        <div class="card-title">Total Events</div>
+        <div class="card-body"
+            style="font-family: var(--font-heading); font-size: 32px; font-weight: 500; color: var(--color-dark);">
+            {{ total_events }}
+        </div>
+        <p style="margin-top: 8px; font-size: 14px;">Historical seismic records</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Verified Incidents</div>
+        <div class="card-body"
+            style="font-family: var(--font-heading); font-size: 32px; font-weight: 500; color: var(--color-success);">
+            {{ verified_events }}
+        </div>
+        <p style="margin-top: 8px; font-size: 14px;">Events cleared by administration</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Active Volunteers</div>
+        <div class="card-body"
+            style="font-family: var(--font-heading); font-size: 32px; font-weight: 500; color: var(--color-accent);">
+            {{ total_volunteers }}
+        </div>
+        <p style="margin-top: 8px; font-size: 14px;">Personnel registered</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Disrupted Routes</div>
+        <div class="card-body"
+            style="font-family: var(--font-heading); font-size: 32px; font-weight: 500; color: var(--color-error);">
+            {{ disrupted_routes }}
+        </div>
+        <p style="margin-top: 8px; font-size: 14px;">Routes blocked or damaged</p>
+    </div>
+</div>
+
+<div style="margin-top: 48px; text-align: center;">
+    <a href="{{ url_for('events') }}" class="btn">View All Events</a>
+    <a href="{{ url_for('volunteers') }}" class="btn">Coordinate Volunteers</a>
+</div>
+
+{% endblock %}
