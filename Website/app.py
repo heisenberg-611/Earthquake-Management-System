@@ -133,7 +133,7 @@ def signup_user():
                     person_id = cursor.lastrowid
                     cursor.execute("INSERT INTO User (UserID, Region) VALUES (%s, %s)", (person_id, region))
                     conn.commit()
-                    flash("User registered successfully! Please longin to access the system.", "success")
+                    flash("User registered successfully! Please login to access the system.", "success")
                     return redirect(url_for('login'))
             conn.close()
         except Exception as e:
@@ -208,6 +208,7 @@ def routes():
 # FEATURE: Volunteer Registration - READ
 # -> Admin can view all registered volunteers.
 @app.route('/volunteers')
+@admin_required
 def volunteers():
     volunteers_data = []
     try:

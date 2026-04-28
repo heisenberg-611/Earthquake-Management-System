@@ -13,7 +13,9 @@
             {% if session.get('user_id') %}
             <a href="{{ url_for('dashboard') }}">Dashboard</a>
             <a href="{{ url_for('events') }}">Events</a>
+            {% if session.get('role') == 'Admin' %}
             <a href="{{ url_for('volunteers') }}">Volunteers</a>
+            {% endif %}
             <a href="{{ url_for('routes') }}">Routes</a>
             {% endif %}
             <span style="border-left: 1px solid var(--border-medium); margin: 0 8px;"></span>
