@@ -53,8 +53,8 @@ The system features robust Role-Based Access Control (RBAC), dividing permission
 
 ### 1. Clone & Install
 ```bash
-git clone <your-repo-url>
-cd website-test
+git clone https://github.com/heisenberg-611/Earthquake-Management-System.git
+cd Earthquake-Management-System
 pip install -r requirements.txt
 ```
 
