@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Evacuation Routes - Earthquake Management System{% endblock %}
+
+{% block content %}
+<div style="margin: 40px 0 24px; display: flex; justify-content: space-between; align-items: flex-end;">
+    <div>
+        <h2>Evacuation Routes</h2>
+        <p>Status monitoring of primary arterial and local evacuation thoroughfares.</p>
+    </div>
+    {% if session.get('role') == 'Admin' %}
+    <a href="{{ url_for('add_route') }}" class="btn">Add Route</a>
+    {% endif %}
+</div>
+
+<div class="card" style="padding: 24px; margin-bottom: 24px;">
+    <div style="display: flex; gap: 16px;">
+        <input type="text" id="filter-route-path" placeholder="Search Route Path..." style="padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100); flex: 1;">
+        <select id="filter-road-type" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100); flex: 1;">
+            <option value="">Filter by Road Type (All)</option>
+            {% for rtype in road_types %}
+            <option value="{{ rtype }}">{{ rtype }}</option>
+            {% endfor %}
+        </select>
+        <select id="filter-route-status" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100); flex: 1;">
+            <option value="">Filter by Status (All)</option>
+            <option value="Open">Open</option>
+            <option value="Blocked">Blocked</option>
+            <option value="Damaged">Damaged</option>
+            <option value="Under Repair">Under Repair</option>
+        </select>
+    </div>
+</div>
+<div class="card" style="padding: 0;">
+    <table class="data-table" id="routes-table" style="margin-top: 0; border: none; box-shadow: none;">
+        <thead>
+            <tr>
+                <th class="sortable">Route Path</th>
+                <th class="sortable">Distance (km)</th>
+                <th class="sortable">Road Type</th>
+                <th class="sortable">Status</th>
+                {% if session.get('role') == 'Admin' %}<th>Actions</th>{% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for route in routes %}
+            <tr>
+                <td>
+                    <div style="font-weight: 500;">{{ route.StartPoint }}</div>
+                    <div style="font-size: 14px; color: rgba(38,37,30,0.55);">to {{ route.EndPoint }}</div>
+                </td>
+                <td style="font-family: var(--font-mono); font-size: 14px;">{{ route.Distance }}</td>
+                <td>{{ route.RoadType }}</td>
+                <td>
+                    {% if route.Status == 'Open' %}
+                        <span class="pill status-verified" style="background-color: #e2f0eb; color: var(--color-success);">{{ route.Status }}</span>
+                    {% elif route.Status in ['Blocked', 'Damaged'] %}
+                        <span class="pill status-blocked" style="background-color: #fce8ee; color: var(--color-error);">{{ route.Status }}</span>
+                    {% else %}
+                        <span class="pill status-unverified" style="background-color: #ffecd9; color: var(--color-accent);">{{ route.Status }}</span>
+                    {% endif %}
+                </td>
+                {% if session.get('role') == 'Admin' %}
+                <td>
+                    <a href="{{ url_for('edit_route', id=route.RouteID) }}" style="font-size: 14px; margin-right: 8px;">Edit</a>
+                    <form method="POST" action="{{ url_for('delete_route', id=route.RouteID) }}" style="display:inline;">
+                        <button type="submit" style="background:none; border:none; color:var(--color-error); cursor:pointer; font-size: 14px; font-family: var(--font-ui);">Delete</button>
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" style="text-align: center; color: rgba(38,37,30,0.55);">No route data active</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

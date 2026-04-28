@@ -70,7 +70,21 @@ def admin_dashboard():
 @app.route('/user/dashboard')
 @user_required
 def user_dashboard():
-    return render_template('user_dashboard.html')
+    volunteer_status = None
+    volunteer_skills = None
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT AssignmentStatus, Skills FROM Volunteer WHERE UserID=%s", (session['user_id'],))
+            vol = cursor.fetchone()
+            if vol:
+                volunteer_status = vol['AssignmentStatus']
+                volunteer_skills = vol['Skills']
+        conn.close()
+    except Exception as e:
+        flash(f"Error fetching volunteer status: {e}", "error")
+        
+    return render_template('user_dashboard.html', volunteer_status=volunteer_status, volunteer_skills=volunteer_skills)
 
 # --- AUTH ROUTES ---
 @app.route('/login', methods=['GET', 'POST'])
@@ -227,6 +241,8 @@ def volunteers():
         flash(f"Error fetching volunteers: {e}", "error")
     return render_template('volunteers.html', volunteers=volunteers_data)
 
+# --- ENTITY ENDPOINTS: EVENT ---
+
 # FEATURE: Seismic Event Tracker - CREATE
 # -> Admin can add new earthquake event records to the system.
 @app.route('/admin/event/add', methods=['GET', 'POST'])
@@ -290,6 +306,183 @@ def delete_event(id):
     except Exception as e:
         flash(f"Error: {e}", "error")
     return redirect(url_for('events'))
+
+# --- ENTITY ENDPOINTS: ROUTE ---
+
+# FEATURE: Evacuation Route Tracker - CREATE
+# -> Admin can add evacuation routes (start point, end point, distance, road type).
+@app.route('/admin/route/add', methods=['GET', 'POST'])
+@admin_required
+def add_route():
+    if request.method == 'POST':
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "INSERT INTO Evacuation_Route (StartPoint, EndPoint, Distance, RoadType, Status, AdminID) VALUES (%s, %s, %s, %s, %s, %s)",
+                    (request.form['start_point'], request.form['end_point'], request.form['distance'], request.form['road_type'], request.form['status'], session['user_id'])
+                )
+                conn.commit()
+            conn.close()
+            flash("Route added successfully.", "success")
+            return redirect(url_for('routes'))
+        except Exception as e:
+            flash(f"Error: {e}", "error")
+    return render_template('route_form.html', route=None)
+
+# FEATURE: Evacuation Route Tracker - UPDATE
+# -> Admin can update route status (Open, Blocked, Damaged, Under Repair).
+@app.route('/admin/route/edit/<int:id>', methods=['GET', 'POST'])
+@admin_required
+def edit_route(id):
+    try:
+        conn = get_db_connection()
+        if request.method == 'POST':
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE Evacuation_Route SET StartPoint=%s, EndPoint=%s, Distance=%s, RoadType=%s, Status=%s WHERE RouteID=%s",
+                    (request.form['start_point'], request.form['end_point'], request.form['distance'], request.form['road_type'], request.form['status'], id)
+                )
+                conn.commit()
+            conn.close()
+            flash("Route updated.", "success")
+            return redirect(url_for('routes'))
+            
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * FROM Evacuation_Route WHERE RouteID=%s", (id,))
+            route = cursor.fetchone()
+        conn.close()
+        return render_template('route_form.html', route=route)
+    except Exception as e:
+        flash(f"Error: {e}", "error")
+        return redirect(url_for('routes'))
+
+# FEATURE: Evacuation Route Tracker - DELETE
+# -> Admin can remove routes that are permanently damaged or no longer needed.
+@app.route('/admin/route/delete/<int:id>', methods=['POST'])
+@admin_required
+def delete_route(id):
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("DELETE FROM Evacuation_Route WHERE RouteID=%s", (id,))
+            conn.commit()
+        conn.close()
+        flash("Route deleted.", "success")
+    except Exception as e:
+        flash(f"Error: {e}", "error")
+    return redirect(url_for('routes'))
+
+# --- ENTITY ENDPOINTS: VOLUNTEER ---
+@app.route('/admin/volunteer/add', methods=['GET', 'POST'])
+@admin_required
+def admin_add_volunteer():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        skills = request.form['skills']
+        region = request.form.get('region', 'Unassigned')
+        hashed_pw = generate_password_hash("volunteer123", method='pbkdf2:sha256')
+        
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT * FROM Person WHERE Email=%s", (email,))
+                existing_person = cursor.fetchone()
+                
+                if not existing_person:
+                    cursor.execute("INSERT INTO Person (Name, Email, Password) VALUES (%s, %s, %s)", (name, email, hashed_pw))
+                    user_id = cursor.lastrowid
+                    cursor.execute("INSERT INTO User (UserID, Region) VALUES (%s, %s)", (user_id, region))
+                else:
+                    user_id = existing_person['PersonID']
+                    cursor.execute("SELECT * FROM User WHERE UserID=%s", (user_id,))
+                    if not cursor.fetchone():
+                        cursor.execute("INSERT INTO User (UserID, Region) VALUES (%s, %s)", (user_id, region))
+                
+                cursor.execute("SELECT * FROM Volunteer WHERE UserID=%s", (user_id,))
+                if cursor.fetchone():
+                    flash("User is already a registered volunteer.", "error")
+                else:
+                    cursor.execute("INSERT INTO Volunteer (Skills, AssignmentStatus, UserID, AdminID) VALUES (%s, 'Standby', %s, %s)", (skills, user_id, session['user_id']))
+                    conn.commit()
+                    flash(f"Volunteer field profile initiated! Non-existing users received temporary default password: 'volunteer123'", "success")
+            conn.close()
+            return redirect(url_for('volunteers'))
+        except Exception as e:
+            flash(f"Error: {e}", "error")
+    return render_template('admin_add_volunteer.html')
+
+# FEATURE: Volunteer Registration - CREATE/UPDATE
+# -> Users can register as a volunteer by submitting their details and skills.
+@app.route('/user/volunteer/register', methods=['GET', 'POST'])
+@user_required
+def register_volunteer():
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * FROM Volunteer WHERE UserID=%s", (session['user_id'],))
+            existing = cursor.fetchone()
+            
+        if request.method == 'POST':
+            with conn.cursor() as cursor:
+                if existing:
+                    cursor.execute("UPDATE Volunteer SET Skills=%s WHERE UserID=%s", (request.form['skills'], session['user_id']))
+                else:
+                    cursor.execute("INSERT INTO Volunteer (Skills, AssignmentStatus, UserID) VALUES (%s, 'Standby', %s)", (request.form['skills'], session['user_id']))
+                conn.commit()
+            conn.close()
+            flash("Volunteer registration processed!", "success")
+            return redirect(url_for('user_dashboard'))
+            
+        conn.close()
+        return render_template('volunteer_form.html', volunteer=existing, is_admin=False)
+    except Exception as e:
+        flash(f"Error: {e}", "error")
+        return redirect(url_for('user_dashboard'))
+
+# FEATURE: Volunteer Registration - UPDATE
+# -> Admin can update volunteer assignment status (Standby, Deployed, Returned).
+@app.route('/admin/volunteer/edit/<int:id>', methods=['GET', 'POST'])
+@admin_required
+def edit_volunteer(id):
+    try:
+        conn = get_db_connection()
+        if request.method == 'POST':
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE Volunteer SET Skills=%s, AssignmentStatus=%s, AdminID=%s WHERE VolunteerID=%s",
+                    (request.form['skills'], request.form['status'], session['user_id'], id)
+                )
+                conn.commit()
+            conn.close()
+            flash("Volunteer status updated.", "success")
+            return redirect(url_for('volunteers'))
+            
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * FROM Volunteer WHERE VolunteerID=%s", (id,))
+            vol = cursor.fetchone()
+        conn.close()
+        return render_template('volunteer_form.html', volunteer=vol, is_admin=True)
+    except Exception as e:
+        flash(f"Error: {e}", "error")
+        return redirect(url_for('volunteers'))
+
+# FEATURE: Volunteer Registration - DELETE
+# -> Admin can remove inactive or unavailable volunteers from the system.
+@app.route('/admin/volunteer/delete/<int:id>', methods=['POST'])
+@admin_required
+def delete_volunteer(id):
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("DELETE FROM Volunteer WHERE VolunteerID=%s", (id,))
+            conn.commit()
+        conn.close()
+        flash("Volunteer removed from active system.", "success")
+    except Exception as e:
+        flash(f"Error: {e}", "error")
+    return redirect(url_for('volunteers'))
 
 if __name__ == '__main__':
     # init_db_if_not_exists()

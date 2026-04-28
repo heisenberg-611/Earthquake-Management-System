@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Volunteer - Earthquake Management System{% endblock %}
+
+{% block content %}
+<div style="margin: 40px auto; max-width: 600px;">
+    <h2>{{ 'Edit Volunteer Status' if is_admin else 'Register Skills' }}</h2>
+    <p style="margin-bottom: 24px;">{{ 'Manage deployment status for active volunteers.' if is_admin else 'Provide your skills so we can dispatch you automatically during an event.' }}</p>
+
+    <div class="card">
+        <form method="POST" style="display: flex; flex-direction: column; gap: 16px;">
+            <div>
+                <label style="font-weight: 500; font-size: 14px; margin-bottom: 4px; display: block;">Skills</label>
+                <input type="text" name="skills" required placeholder="e.g. First Aid, Debris Clearing" value="{{ volunteer.Skills if volunteer else '' }}" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100);">
+            </div>
+            
+            {% if is_admin %}
+            <div>
+                <label style="font-weight: 500; font-size: 14px; margin-bottom: 4px; display: block;">Assignment Status</label>
+                <select name="status" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100);">
+                    <option value="Standby" {% if volunteer and volunteer.AssignmentStatus == 'Standby' %}selected{% endif %}>Standby</option>
+                    <option value="Deployed" {% if volunteer and volunteer.AssignmentStatus == 'Deployed' %}selected{% endif %}>Deployed</option>
+                    <option value="Returned" {% if volunteer and volunteer.AssignmentStatus == 'Returned' %}selected{% endif %}>Returned</option>
+                </select>
+            </div>
+            {% endif %}
+            
+            <div style="display: flex; gap: 12px; margin-top: 16px;">
+                <button type="submit" class="btn" style="flex: 1;">Submit</button>
+                {% if is_admin %}
+                <a href="{{ url_for('volunteers') }}" class="btn" style="background-color: var(--surface-100); text-align: center;">Cancel</a>
+                {% else %}
+                <a href="{{ url_for('user_dashboard') }}" class="btn" style="background-color: var(--surface-100); text-align: center;">Cancel</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
