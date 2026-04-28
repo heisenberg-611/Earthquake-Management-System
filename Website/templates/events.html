@@ -13,6 +13,36 @@
     {% endif %}
 </div>
 
+<div class="card" style="margin-bottom: 24px; padding: 16px;">
+    <form method="GET" action="{{ url_for('events') }}" style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px;">
+            <label for="search_area" style="display: block; margin-bottom: 8px; font-weight: 500;">Search Affected Area</label>
+            <input type="text" id="search_area" name="search_area" value="{{ search_area }}" placeholder="e.g. San Francisco" style="width: 100%; padding: 8px; border: 1px solid rgba(38,37,30,0.15); border-radius: 4px;">
+        </div>
+        <div style="flex: 1; min-width: 150px;">
+            <label for="min_magnitude" style="display: block; margin-bottom: 8px; font-weight: 500;">Min Magnitude</label>
+            <input type="number" id="min_magnitude" name="min_magnitude" value="{{ min_magnitude }}" step="0.1" placeholder="0.0" style="width: 100%; padding: 8px; border: 1px solid rgba(38,37,30,0.15); border-radius: 4px;">
+        </div>
+        <div style="flex: 1; min-width: 150px;">
+            <label for="max_depth" style="display: block; margin-bottom: 8px; font-weight: 500;">Max Depth (km)</label>
+            <input type="number" id="max_depth" name="max_depth" value="{{ max_depth }}" step="0.1" placeholder="100.0" style="width: 100%; padding: 8px; border: 1px solid rgba(38,37,30,0.15); border-radius: 4px;">
+        </div>
+        <div style="flex: 1; min-width: 150px;">
+            <label for="status" style="display: block; margin-bottom: 8px; font-weight: 500;">Status</label>
+            <select id="status" name="status" style="width: 100%; padding: 8px; border: 1px solid rgba(38,37,30,0.15); border-radius: 4px;">
+                <option value="">All Statuses</option>
+                {% for s in statuses %}
+                <option value="{{ s }}" {% if current_status == s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="btn">Filter</button>
+            <a href="{{ url_for('events') }}" class="btn" style="background-color: transparent; color: var(--color-text); border: 1px solid rgba(38,37,30,0.15);">Clear</a>
+        </div>
+    </form>
+</div>
+
 <div class="card" style="padding: 0;">
     <table class="data-table" style="margin-top: 0; border: none; box-shadow: none;">
         <thead>
