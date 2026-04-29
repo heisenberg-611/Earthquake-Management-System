@@ -1,36 +1,35 @@
 {% extends 'base.html' %}
-
 {% block title %}Add Volunteer - Earthquake Management System{% endblock %}
-
 {% block content %}
-<div style="margin: 40px auto; max-width: 600px;">
+<div class="form-card">
+  <div class="form-header" style="text-align: center; margin-bottom: 8px;">
+    <div style="font-size: 3rem; margin-bottom: 12px;">➕</div>
     <h2>Directly Add Volunteer</h2>
-    <p style="margin-bottom: 24px;">Automatically registers the volunteer onto the User platform and the Volunteer field roster simultaneously.</p>
-
-    <div class="card">
-        <form method="POST" style="display: flex; flex-direction: column; gap: 16px;">
-            <div>
-                <label style="font-weight: 500; font-size: 14px; margin-bottom: 4px; display: block;">Full Name</label>
-                <input type="text" name="name" required style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100);">
-            </div>
-            <div>
-                <label style="font-weight: 500; font-size: 14px; margin-bottom: 4px; display: block;">Email</label>
-                <input type="email" name="email" required style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100);">
-            </div>
-            <div>
-                <label style="font-weight: 500; font-size: 14px; margin-bottom: 4px; display: block;">Region</label>
-                <input type="text" name="region" required placeholder="(e.g., Eastern Seaboard)" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100);">
-            </div>
-            <div>
-                <label style="font-weight: 500; font-size: 14px; margin-bottom: 4px; display: block;">Skills</label>
-                <input type="text" name="skills" required placeholder="(e.g., Heavy Machinery, Medical)" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100);">
-            </div>
-            
-            <div style="display: flex; gap: 12px; margin-top: 16px;">
-                <button type="submit" class="btn" style="flex: 1;">Register Volunteer</button>
-                <a href="{{ url_for('volunteers') }}" class="btn" style="background-color: var(--surface-100); text-align: center;">Cancel</a>
-            </div>
-        </form>
-    </div>
+    <p style="margin-top: 8px;">Automatically registers the volunteer onto the User platform and the Volunteer field roster simultaneously.</p>
+  </div>
+  <div class="form-card-inner">
+    <form method="POST" style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" name="name" required placeholder="Jane Smith">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" required placeholder="volunteer@example.com">
+      </div>
+      <div class="form-group">
+        <label>Region</label>
+        <input type="text" name="region" required placeholder="e.g. Eastern Seaboard">
+      </div>
+      <div class="form-group">
+        <label>Skills</label>
+        <input type="text" name="skills" required placeholder="e.g. Heavy Machinery, Medical">
+      </div>
+      <div class="form-footer">
+        <button type="submit" class="btn">✅ Register Volunteer</button>
+        <a href="{{ url_for('volunteers') }}" class="btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}

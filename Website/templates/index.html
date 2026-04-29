@@ -1,55 +1,40 @@
 {% extends 'base.html' %}
-
 {% block title %}Dashboard - Earthquake Management System{% endblock %}
-
 {% block content %}
-<div class="hero">
-    <h1>Earthquake Management<br>Dashboard</h1>
-    <p class="card-body">A sophisticated system to track seismic activities, coordinate emergency volunteers, and
-        monitor evacuation routes in real-time.</p>
+<div class="hero" style="padding: 60px 0 40px; text-align: left;">
+  <h1>Earthquake Management<br>Dashboard</h1>
+  <p style="max-width: 600px; margin-top: 12px;">A sophisticated system to track seismic activities, coordinate emergency volunteers, and monitor evacuation routes in real-time.</p>
 </div>
 
-<div class="grid">
-    <div class="card">
-        <div class="card-title">Total Events</div>
-        <div class="card-body"
-            style="font-family: var(--font-heading); font-size: 32px; font-weight: 500; color: var(--color-dark);">
-            {{ total_events }}
-        </div>
-        <p style="margin-top: 8px; font-size: 14px;">Historical seismic records</p>
-    </div>
-
-    <div class="card">
-        <div class="card-title">Verified Incidents</div>
-        <div class="card-body"
-            style="font-family: var(--font-heading); font-size: 32px; font-weight: 500; color: var(--color-success);">
-            {{ verified_events }}
-        </div>
-        <p style="margin-top: 8px; font-size: 14px;">Events cleared by administration</p>
-    </div>
-
-    <div class="card">
-        <div class="card-title">Active Volunteers</div>
-        <div class="card-body"
-            style="font-family: var(--font-heading); font-size: 32px; font-weight: 500; color: var(--color-accent);">
-            {{ total_volunteers }}
-        </div>
-        <p style="margin-top: 8px; font-size: 14px;">Personnel registered</p>
-    </div>
-
-    <div class="card">
-        <div class="card-title">Disrupted Routes</div>
-        <div class="card-body"
-            style="font-family: var(--font-heading); font-size: 32px; font-weight: 500; color: var(--color-error);">
-            {{ disrupted_routes }}
-        </div>
-        <p style="margin-top: 8px; font-size: 14px;">Routes blocked or damaged</p>
-    </div>
+<div class="grid" style="margin-bottom: 32px;">
+  <div class="stat-card" style="border-top: 2px solid var(--cyan);">
+    <div class="stat-icon">📊</div>
+    <div class="stat-number text-cyan"><span class="count-up" data-target="{{ total_events }}">{{ total_events }}</span></div>
+    <div class="stat-label">Total Events</div>
+    <div class="stat-sub">Historical seismic records</div>
+  </div>
+  <div class="stat-card" style="border-top: 2px solid var(--success);">
+    <div class="stat-icon">✅</div>
+    <div class="stat-number text-success"><span class="count-up" data-target="{{ verified_events }}">{{ verified_events }}</span></div>
+    <div class="stat-label">Verified Incidents</div>
+    <div class="stat-sub">Events cleared by administration</div>
+  </div>
+  <div class="stat-card" style="border-top: 2px solid var(--accent);">
+    <div class="stat-icon">🙋</div>
+    <div class="stat-number text-accent"><span class="count-up" data-target="{{ total_volunteers }}">{{ total_volunteers }}</span></div>
+    <div class="stat-label">Active Volunteers</div>
+    <div class="stat-sub">Personnel registered</div>
+  </div>
+  <div class="stat-card pulse" style="border-top: 2px solid var(--danger);">
+    <div class="stat-icon">🚧</div>
+    <div class="stat-number text-danger"><span class="count-up" data-target="{{ disrupted_routes }}">{{ disrupted_routes }}</span></div>
+    <div class="stat-label">Disrupted Routes</div>
+    <div class="stat-sub">Blocked or damaged</div>
+  </div>
 </div>
 
-<div style="margin-top: 48px; text-align: center;">
-    <a href="{{ url_for('events') }}" class="btn">View All Events</a>
-    <a href="{{ url_for('volunteers') }}" class="btn">Coordinate Volunteers</a>
+<div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 48px;">
+  <a href="{{ url_for('events') }}" class="btn">📡 View All Events</a>
+  <a href="{{ url_for('volunteers') }}" class="btn-ghost">👥 Coordinate Volunteers</a>
 </div>
-
 {% endblock %}

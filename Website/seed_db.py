@@ -19,12 +19,12 @@ def seed_database():
         
         password_hash = generate_password_hash("password123")
         
-        print("Inserting 60 Persons (for Users and Admins)...")
+        print("Inserting 200 Persons (for Users and Admins)...")
         first_names = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Linda", "William", "Elizabeth", "David", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen", "Christopher", "Nancy", "Daniel", "Lisa", "Matthew", "Betty", "Anthony", "Margaret", "Mark", "Sandra"]
         last_names = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson"]
         
         person_ids = []
-        for i in range(65):
+        for i in range(200):
             fname = random.choice(first_names)
             lname = random.choice(last_names)
             name = f"{fname} {lname} {i}"
@@ -33,7 +33,7 @@ def seed_database():
             cursor.execute("INSERT INTO Person (Name, Email, Password) VALUES (%s, %s, %s)", (name, email, password_hash))
             person_ids.append(cursor.lastrowid)
         
-        print("Assigning Roles (5 Admins, 60 Users)...")
+        print("Assigning Roles (5 Admins, 195 Users)...")
         admin_ids = []
         for i in range(5):
             cursor.execute("INSERT IGNORE INTO Admin (AdminID) VALUES (%s)", (person_ids[i],))
@@ -45,11 +45,11 @@ def seed_database():
             cursor.execute("INSERT IGNORE INTO User (UserID, Region) VALUES (%s, %s)", (person_ids[i], random.choice(regions)))
             user_ids.append(person_ids[i])
             
-        print("Generating 60 Earthquake Events...")
+        print("Generating 200 Earthquake Events...")
         cities = ["Los Angeles", "San Francisco", "Tokyo", "Manila", "Jakarta", "Mexico City", "Santiago", "Lima", "Tehran", "Istanbul", "Athens", "Wellington"]
         statuses_event = ['Verified', 'Unverified']
         
-        for _ in range(60):
+        for _ in range(200):
             mag = round(random.uniform(2.5, 8.5), 1)
             depth = round(random.uniform(5.0, 300.0), 1)
             coords = generate_random_coords()
@@ -62,12 +62,12 @@ def seed_database():
                 VALUES (%s, %s, %s, %s, %s, %s)
             """, (mag, depth, coords, area, status, admin_id))
             
-        print("Generating 55 Volunteers...")
+        print("Generating 150 Volunteers...")
         skills_list = ['First Aid', 'Search and Rescue', 'Medical Doctor', 'Heavy Machinery Operator', 'Logistics', 'Communications', 'Paramedic', 'Firefighter', 'Translator', 'Structural Engineer']
         statuses_vol = ['Standby', 'Deployed', 'Returned']
         
         # We need a unique UserID for each volunteer
-        for uid in user_ids[:55]: 
+        for uid in user_ids[:150]: 
             cursor.execute("SELECT * FROM Volunteer WHERE UserID = %s", (uid,))
             if not cursor.fetchone():
                 skills = f"{random.choice(skills_list)}, {random.choice(skills_list)}"
@@ -76,12 +76,12 @@ def seed_database():
                     VALUES (%s, %s, %s, %s)
                 """, (skills, random.choice(statuses_vol), uid, random.choice(admin_ids)))
                 
-        print("Generating 60 Evacuation Routes...")
+        print("Generating 200 Evacuation Routes...")
         places = ["City Hospital", "North Hills Shelter", "Central Station", "Eastside Camp", "Westside Mall", "South Bridge", "River Valley", "Highland Park", "Old Town", "New City Stadium", "Safe Zone Alpha", "Camp Bravo"]
         road_types = ["Highway", "Local Road", "Expressway", "Mountain Road", "Dirt Path", "Bridge"]
         statuses_route = ['Open', 'Blocked', 'Damaged', 'Under Repair']
         
-        for i in range(60):
+        for i in range(200):
             start = f"{random.choice(places)} {i}"
             end = f"{random.choice(places)} {i+100}"
             dist = round(random.uniform(2.0, 50.0), 1)

@@ -1,51 +1,62 @@
 {% extends 'base.html' %}
-
 {% block title %}User Dashboard - Earthquake Management System{% endblock %}
-
 {% block content %}
-<div class="hero">
-    <h1>Earthquake Monitoring<br>Center</h1>
-    <p class="card-body">Stay safe exactly where you are by checking evacuation routes and historical event reports.</p>
+<div class="hero" style="padding: 60px 0 40px; text-align: left;">
+  <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
+    <span style="font-size: 2.5rem;">🌐</span>
+    <h1 style="font-size: clamp(1.8rem, 4vw, 3rem);">Earthquake Monitoring<br>Center</h1>
+  </div>
+  <p>Stay safe by checking evacuation routes and historical event reports in your area.</p>
 </div>
 
-<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));">
-    <div class="card" style="text-align: left; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <div class="card-title">Evacuation Intelligence</div>
-        <p class="card-body" style="font-size: 15px; margin-top: 8px;">
-            Access this module to see which routes are safe for evacuation and which are blocked.
-        </p>
-        <a href="{{ url_for('routes') }}" class="btn" style="margin-top: 16px;">View Routes</a>
-    </div>
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); margin-bottom: 32px;">
 
-    <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <div class="card-title">Volunteer Taskforce</div>
-        <p class="card-body" style="font-size: 15px; margin-top: 8px;">
-            Got specialized skills? The Earth is constantly shifting, and we are counting on dedicated volunteers like you!
-        </p>
-        {% if volunteer_status %}
-        <p class="card-body" style="font-size: 15px; margin-top: 8px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
-            Your Current Status: 
-            {% if volunteer_status == 'Deployed' %}
-                <span class="pill status-verified" style="background-color: #ffecd9; color: var(--color-accent);">{{ volunteer_status }}</span>
-            {% elif volunteer_status == 'Standby' %}
-                <span class="pill" style="background-color: var(--surface-300);">{{ volunteer_status }}</span>
-            {% else %}
-                <span class="pill" style="background-color: var(--surface-200);">{{ volunteer_status }}</span>
-            {% endif %}
-        </p>
-        <form method="POST" action="{{ url_for('register_volunteer') }}" style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
-            <label style="font-size: 14px; font-weight: 500;">Update Skills</label>
-            <input type="text" name="skills" required value="{{ volunteer_skills }}" placeholder="e.g. First Aid, Debris Clearing" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100);">
-            <button type="submit" class="btn">Update Profile</button>
-        </form>
+  <!-- Evacuation Routes Card -->
+  <div class="card" style="border-top: 2px solid var(--success);">
+    <div style="font-size: 2.5rem; margin-bottom: 16px;">🗺️</div>
+    <h3>Evacuation Intelligence</h3>
+    <p style="margin: 12px 0 20px;">Access this module to see which routes are safe for evacuation and which are blocked.</p>
+    <a href="{{ url_for('routes') }}" class="btn">View Routes</a>
+  </div>
+
+  <!-- Volunteer Card -->
+  <div class="card" style="border-top: 2px solid var(--accent);">
+    <div style="font-size: 2.5rem; margin-bottom: 16px;">🙋</div>
+    <h3>Volunteer Taskforce</h3>
+    <p style="margin: 12px 0;">Got specialized skills? The Earth is constantly shifting, and we're counting on dedicated volunteers like you!</p>
+
+    {% if volunteer_status %}
+      <p style="margin: 14px 0; font-size: 0.875rem; color: var(--text-muted);">
+        Your Current Status:
+        {% if volunteer_status == 'Deployed' %}
+          <span class="badge badge-deployed">{{ volunteer_status }}</span>
+        {% elif volunteer_status == 'Standby' %}
+          <span class="badge badge-standby">{{ volunteer_status }}</span>
         {% else %}
-        <form method="POST" action="{{ url_for('register_volunteer') }}" style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
-            <label style="font-size: 14px; font-weight: 500;">Register as a Volunteer (Skills)</label>
-            <input type="text" name="skills" required placeholder="e.g. First Aid, Search & Rescue" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100);">
-            <button type="submit" class="btn">Register</button>
-        </form>
+          <span class="badge badge-returned">{{ volunteer_status }}</span>
         {% endif %}
-    </div>
+      </p>
+      <form method="POST" action="{{ url_for('register_volunteer') }}" style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
+        <div class="form-group">
+          <label>Update Skills</label>
+          <input type="text" name="skills" required value="{{ volunteer_skills }}" placeholder="e.g. First Aid, Debris Clearing">
+        </div>
+        <button type="submit" class="btn">Update Profile</button>
+      </form>
+    {% else %}
+      <form method="POST" action="{{ url_for('register_volunteer') }}" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+        <div class="form-group">
+          <label>Register as Volunteer — Skills</label>
+          <input type="text" name="skills" required placeholder="e.g. First Aid, Search &amp; Rescue">
+        </div>
+        <button type="submit" class="btn">Register</button>
+      </form>
+    {% endif %}
+  </div>
+
 </div>
 
+<div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 48px;">
+  <a href="{{ url_for('events') }}" class="btn-ghost">📡 View Seismic Events</a>
+</div>
 {% endblock %}

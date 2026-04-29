@@ -1,137 +1,131 @@
 {% extends 'base.html' %}
-
 {% block title %}Events - Earthquake Management System{% endblock %}
-
 {% block content %}
-<div style="margin: 40px 0 24px; display: flex; justify-content: space-between; align-items: flex-end;">
-    <div>
-        <h2>Seismic Events</h2>
-        <p>Log of verified and unverified earthquake events processed by the administration.</p>
-    </div>
-    {% if session.get('role') == 'Admin' %}
-    <a href="{{ url_for('add_event') }}" class="btn">Add Event</a>
-    {% endif %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h2>📡 Seismic Events</h2>
+    <p>Log of verified and unverified earthquake events processed by the administration.</p>
+  </div>
+  {% if session.get('role') == 'Admin' %}
+  <a href="{{ url_for('add_event') }}" class="btn">+ Add Event</a>
+  {% endif %}
 </div>
 
-<div class="card" style="margin-bottom: 24px; padding: 16px;">
-    <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
-        <div style="flex: 1; min-width: 200px;">
-            <label for="search_area" style="display: block; margin-bottom: 8px; font-weight: 500;">Search Affected Area</label>
-            <input type="text" id="search_area" placeholder="e.g. San Francisco" style="width: 100%; padding: 8px; border: 1px solid rgba(38,37,30,0.15); border-radius: 4px;">
-        </div>
-        <div style="flex: 1; min-width: 150px;">
-            <label for="min_magnitude" style="display: block; margin-bottom: 8px; font-weight: 500;">Min Magnitude</label>
-            <input type="number" id="min_magnitude" step="0.1" placeholder="0.0" style="width: 100%; padding: 8px; border: 1px solid rgba(38,37,30,0.15); border-radius: 4px;">
-        </div>
-        <div style="flex: 1; min-width: 150px;">
-            <label for="max_depth" style="display: block; margin-bottom: 8px; font-weight: 500;">Max Depth (km)</label>
-            <input type="number" id="max_depth" step="0.1" placeholder="100.0" style="width: 100%; padding: 8px; border: 1px solid rgba(38,37,30,0.15); border-radius: 4px;">
-        </div>
-        <div style="flex: 1; min-width: 150px;">
-            <label for="status" style="display: block; margin-bottom: 8px; font-weight: 500;">Status</label>
-            <select id="status" style="width: 100%; padding: 8px; border: 1px solid rgba(38,37,30,0.15); border-radius: 4px;">
-                <option value="">All Statuses</option>
-                {% for s in statuses %}
-                <option value="{{ s }}">{{ s }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
+<!-- Live Filter Bar -->
+<div class="filter-bar">
+  <div class="form-group">
+    <label for="search_area">Affected Area</label>
+    <input type="text" id="search_area" placeholder="e.g. San Francisco">
+  </div>
+  <div class="form-group">
+    <label for="min_magnitude">Min Magnitude</label>
+    <input type="number" id="min_magnitude" step="0.1" placeholder="0.0">
+  </div>
+  <div class="form-group">
+    <label for="max_depth">Max Depth (km)</label>
+    <input type="number" id="max_depth" step="0.1" placeholder="300">
+  </div>
+  <div class="form-group">
+    <label for="status_filter">Status</label>
+    <select id="status_filter">
+      <option value="">All Statuses</option>
+      {% for s in statuses %}
+      <option value="{{ s }}">{{ s }}</option>
+      {% endfor %}
+    </select>
+  </div>
 </div>
 
-<div class="card" style="padding: 0;">
-    <table class="data-table" style="margin-top: 0; border: none; box-shadow: none;">
-        <thead>
-            <tr>
-                <th class="sortable">ID</th>
-                <th class="sortable">Magnitude (Mw)</th>
-                <th class="sortable">Depth (km)</th>
-                <th class="sortable">Location</th>
-                <th class="sortable">Affected Area</th>
-                <th class="sortable">Time Recorded</th>
-                <th class="sortable">Status</th>
-                {% if session.get('role') == 'Admin' %}<th>Actions</th>{% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for event in events %}
-            <tr>
-                <td style="font-family: var(--font-mono); font-size: 14px;">#{{ event.EventID }}</td>
-                <td style="font-weight: 500;">{{ event.Magnitude }}</td>
-                <td>{{ event.Depth }}</td>
-                <td style="font-family: var(--font-mono); font-size: 14px;">{{ event.Coordinates }}</td>
-                <td>{{ event.AffectedArea }}</td>
-                <td style="font-family: var(--font-mono); font-size: 14px;">{{ event.Timestamp }}</td>
-                <td>
-                    {% if event.Status == 'Verified' %}
-                        <span class="pill status-verified" style="background-color: #e2f0eb; color: var(--color-success);">{{ event.Status }}</span>
-                    {% else %}
-                        <span class="pill status-unverified" style="background-color: #ffecd9; color: var(--color-accent);">{{ event.Status }}</span>
-                    {% endif %}
-                </td>
-                {% if session.get('role') == 'Admin' %}
-                <td>
-                    <a href="{{ url_for('edit_event', id=event.EventID) }}" style="font-size: 14px; margin-right: 8px;">Edit</a>
-                    <form method="POST" action="{{ url_for('delete_event', id=event.EventID) }}" style="display:inline;">
-                        <button type="submit" style="background:none; border:none; color:var(--color-error); cursor:pointer; font-size: 14px; font-family: var(--font-ui);">Delete</button>
-                    </form>
-                </td>
-                {% endif %}
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="7" style="text-align: center; color: rgba(38,37,30,0.55);">No events recorded in database</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="table-card">
+  <table class="data-table" id="events-table">
+    <thead>
+      <tr>
+        <th class="sortable">ID</th>
+        <th class="sortable">Magnitude</th>
+        <th class="sortable">Depth (km)</th>
+        <th class="sortable">Coordinates</th>
+        <th class="sortable">Affected Area</th>
+        <th class="sortable">Time Recorded</th>
+        <th class="sortable">Status</th>
+        {% if session.get('role') == 'Admin' %}<th>Actions</th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for event in events %}
+      <tr>
+        <td class="mono" style="color: var(--text-muted); font-size: 0.8rem;">#{{ event.EventID }}</td>
+        <td class="mag-cell" style="font-weight: 700;">{{ event.Magnitude }}</td>
+        <td class="mono" style="font-size: 0.85rem;">{{ event.Depth }}</td>
+        <td class="mono" style="font-size: 0.75rem; color: var(--text-muted);">{{ event.Coordinates }}</td>
+        <td style="font-weight: 500;">{{ event.AffectedArea }}</td>
+        <td class="mono" style="font-size: 0.8rem; color: var(--text-muted);">{{ event.Timestamp }}</td>
+        <td>
+          {% if event.Status == 'Verified' %}
+            <span class="badge badge-verified">{{ event.Status }}</span>
+          {% else %}
+            <span class="badge badge-unverified">{{ event.Status }}</span>
+          {% endif %}
+        </td>
+        {% if session.get('role') == 'Admin' %}
+        <td>
+          <a href="{{ url_for('edit_event', id=event.EventID) }}" class="btn-cyan" style="margin-right: 6px;">Edit</a>
+          <form method="POST" action="{{ url_for('delete_event', id=event.EventID) }}" style="display:inline;">
+            <button type="submit" class="btn-danger">Del</button>
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 48px;">No events recorded in database</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const searchArea = document.getElementById('search_area');
-    const minMagnitude = document.getElementById('min_magnitude');
-    const maxDepth = document.getElementById('max_depth');
-    const statusSelect = document.getElementById('status');
-    const tableBody = document.querySelector('.data-table tbody');
-
-    function filterTable() {
-        const areaFilter = searchArea.value.toLowerCase();
-        const minMagFilter = parseFloat(minMagnitude.value);
-        const maxDepthFilter = parseFloat(maxDepth.value);
-        const statusFilter = statusSelect.value.toLowerCase();
-        
-        const rows = tableBody.querySelectorAll('tr');
-
-        rows.forEach(row => {
-            // Skip the "No events recorded" row if present
-            if (row.cells.length === 1) return;
-
-            const magText = row.cells[1].innerText;
-            const depthText = row.cells[2].innerText;
-            const areaText = row.cells[4].innerText.toLowerCase();
-            const statusText = row.cells[6].innerText.toLowerCase().trim();
-
-            const mag = parseFloat(magText);
-            const depth = parseFloat(depthText);
-
-            const matchArea = areaFilter === "" || areaText.includes(areaFilter);
-            const matchMag = isNaN(minMagFilter) ? true : (!isNaN(mag) && mag >= minMagFilter);
-            const matchDepth = isNaN(maxDepthFilter) ? true : (!isNaN(depth) && depth <= maxDepthFilter);
-            const matchStatus = statusFilter === "" || statusText === statusFilter;
-
-            if (matchArea && matchMag && matchDepth && matchStatus) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
+  // Color magnitude cells based on value
+  document.querySelectorAll('.mag-cell').forEach(function(cell) {
+    var val = parseFloat(cell.innerText);
+    if (!isNaN(val)) {
+      if (val >= 6) { cell.style.color = 'var(--accent)'; }
+      else if (val >= 4) { cell.style.color = 'var(--warning)'; }
+      else { cell.style.color = 'var(--text)'; }
     }
+  });
 
-    searchArea.addEventListener('input', filterTable);
-    minMagnitude.addEventListener('input', filterTable);
-    maxDepth.addEventListener('input', filterTable);
-    statusSelect.addEventListener('change', filterTable);
+  // Live filtering
+  var searchArea   = document.getElementById('search_area');
+  var minMag       = document.getElementById('min_magnitude');
+  var maxDepth     = document.getElementById('max_depth');
+  var statusFilter = document.getElementById('status_filter');
+  var tbody        = document.querySelector('#events-table tbody');
+
+  function applyFilter() {
+    var area   = searchArea.value.toLowerCase();
+    var mag    = parseFloat(minMag.value);
+    var depth  = parseFloat(maxDepth.value);
+    var status = statusFilter.value.toLowerCase();
+    tbody.querySelectorAll('tr').forEach(function(row) {
+      if (row.cells.length === 1) { return; }
+      var rowMag    = parseFloat(row.cells[1].innerText);
+      var rowDepth  = parseFloat(row.cells[2].innerText);
+      var rowArea   = row.cells[4].innerText.toLowerCase();
+      var rowStatus = row.cells[6].innerText.toLowerCase().trim();
+      var magOk   = isNaN(mag)   || rowMag   >= mag;
+      var depthOk = isNaN(depth) || rowDepth <= depth;
+      var areaOk  = area   === '' || rowArea.includes(area);
+      var statOk  = status === '' || rowStatus === status;
+      row.style.display = (areaOk && magOk && depthOk && statOk) ? '' : 'none';
+    });
+  }
+  searchArea.addEventListener('input', applyFilter);
+  minMag.addEventListener('input', applyFilter);
+  maxDepth.addEventListener('input', applyFilter);
+  statusFilter.addEventListener('change', applyFilter);
 });
 </script>
 {% endblock %}

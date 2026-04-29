@@ -1,28 +1,37 @@
 {% extends 'base.html' %}
-
 {% block title %}Welcome - Earthquake Management System{% endblock %}
-
 {% block content %}
-<div class="voda-hero">
-    <div class="voda-hero-content">
-        <h1>TaTuBo</h1>
-        <p>
-            A comprehensive disaster response platform designed to rapidly connect those in need with critical resources. TaTuBo facilitates immediate crisis assistance, safe evacuation routing, and coordinated volunteer deployment in the critical hours following severe seismic events.
-        </p>
-
-        {% if not session.get('user_id') %}
-        <div style="margin-top: 32px;">
-            <a href="{{ url_for('signup_user') }}" class="voda-btn-pill">CREATE USER ACCOUNT</a>
-        </div>
-        {% else %}
-        <div style="margin-top: 32px;">
-            <a href="{{ url_for('dashboard') }}" class="voda-btn-pill">PROCEED TO DASHBOARD</a>
-        </div>
-        {% endif %}
+<div class="welcome-hero">
+  <div class="welcome-glass">
+    <div style="font-size: 4rem; margin-bottom: 16px;">🌍</div>
+    <h1>TaTuBo</h1>
+    <p>
+      A comprehensive disaster response platform designed to rapidly connect those in need with critical resources.
+      TaTuBo facilitates immediate crisis assistance, safe evacuation routing, and coordinated volunteer deployment
+      in the critical hours following severe seismic events.
+    </p>
+    <div class="welcome-btns">
+      {% if not session.get('user_id') %}
+        <a href="{{ url_for('login') }}" class="btn">Sign In</a>
+        <a href="{{ url_for('signup_user') }}" class="btn-ghost">Create Account</a>
+      {% else %}
+        <a href="{{ url_for('dashboard') }}" class="btn">Go to Dashboard</a>
+      {% endif %}
     </div>
+    <div style="margin-top: 48px; display: flex; gap: 32px; justify-content: center; flex-wrap: wrap;">
+      <div style="text-align: center;">
+        <div style="font-size: 1.6rem; font-weight: 800; color: var(--accent);">24/7</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Monitoring</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 1.6rem; font-weight: 800; color: var(--cyan);">Real-Time</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Event Tracking</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 1.6rem; font-weight: 800; color: var(--success);">Safe</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">Evacuation Routes</div>
+      </div>
+    </div>
+  </div>
 </div>
-
-<div class="voda-red-band"></div>
-
-
 {% endblock %}

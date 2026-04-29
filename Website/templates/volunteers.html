@@ -1,76 +1,116 @@
 {% extends 'base.html' %}
-
 {% block title %}Volunteers - Earthquake Management System{% endblock %}
-
 {% block content %}
-<div style="margin: 40px 0 24px; display: flex; justify-content: space-between; align-items: flex-end;">
-    <div>
-        <h2>Volunteer Registry</h2>
-        <p>Current roster of registered volunteers safely standing by or deployed.</p>
-    </div>
-    {% if session.get('role') == 'User' %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h2>👥 Volunteer Registry</h2>
+    <p>Current roster of registered volunteers standing by or deployed.</p>
+  </div>
+  {% if session.get('role') == 'User' %}
     <a href="{{ url_for('register_volunteer') }}" class="btn">Register as Volunteer</a>
-    {% elif session.get('role') == 'Admin' %}
-    <a href="{{ url_for('admin_add_volunteer') }}" class="btn">Directly Add Volunteer</a>
-    {% endif %}
+  {% elif session.get('role') == 'Admin' %}
+    <a href="{{ url_for('admin_add_volunteer') }}" class="btn">+ Add Volunteer</a>
+  {% endif %}
 </div>
 
-<div class="card" style="padding: 24px; margin-bottom: 24px;">
-    <div style="display: flex; gap: 16px;">
-        <input type="text" id="filter-name" placeholder="Filter by Name" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100); flex: 1;">
-        <input type="text" id="filter-email" placeholder="Filter by Email" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100); flex: 1;">
-        <input type="text" id="filter-skills" placeholder="Filter by Skills" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100); flex: 1;">
-        <select id="filter-status" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border-medium); font-family: var(--font-ui); background: var(--surface-100); width: 250px;">
-            <option value="">Filter by Status (All)</option>
-            <option value="Standby">Standby</option>
-            <option value="Deployed">Deployed</option>
-            <option value="Returned">Returned</option>
-        </select>
-    </div>
+<!-- Filter Bar -->
+<div class="filter-bar">
+  <div class="form-group">
+    <label>Name</label>
+    <input type="text" id="filter-name" placeholder="Filter by name...">
+  </div>
+  <div class="form-group">
+    <label>Email</label>
+    <input type="text" id="filter-email" placeholder="Filter by email...">
+  </div>
+  <div class="form-group">
+    <label>Skills</label>
+    <input type="text" id="filter-skills" placeholder="Filter by skills...">
+  </div>
+  <div class="form-group">
+    <label>Status</label>
+    <select id="filter-status">
+      <option value="">All Statuses</option>
+      <option value="Standby">Standby</option>
+      <option value="Deployed">Deployed</option>
+      <option value="Returned">Returned</option>
+    </select>
+  </div>
 </div>
-<div class="card" style="padding: 0;">
-    <table class="data-table" id="volunteers-table" style="margin-top: 0; border: none; box-shadow: none;">
-        <thead>
-            <tr>
-                <th class="sortable">ID</th>
-                <th class="sortable">Name</th>
-                <th class="sortable">Email</th>
-                <th class="sortable">Skills</th>
-                <th class="sortable">Status</th>
-                {% if session.get('role') == 'Admin' %}<th>Actions</th>{% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for vol in volunteers %}
-            <tr>
-                <td style="font-family: var(--font-mono); font-size: 14px;">#{{ vol.VolunteerID }}</td>
-                <td style="font-weight: 500;">{{ vol.Name }}</td>
-                <td>{{ vol.Email }}</td>
-                <td>{{ vol.Skills }}</td>
-                <td>
-                    {% if vol.AssignmentStatus == 'Deployed' %}
-                        <span class="pill status-verified" style="background-color: #ffecd9; color: var(--color-accent);">{{ vol.AssignmentStatus }}</span>
-                    {% elif vol.AssignmentStatus == 'Standby' %}
-                        <span class="pill" style="background-color: var(--surface-300);">{{ vol.AssignmentStatus }}</span>
-                    {% else %}
-                        <span class="pill" style="background-color: var(--surface-200);">{{ vol.AssignmentStatus }}</span>
-                    {% endif %}
-                </td>
-                {% if session.get('role') == 'Admin' %}
-                <td>
-                    <a href="{{ url_for('edit_volunteer', id=vol.VolunteerID) }}" style="font-size: 14px; margin-right: 8px;">Edit</a>
-                    <form method="POST" action="{{ url_for('delete_volunteer', id=vol.VolunteerID) }}" style="display:inline;">
-                        <button type="submit" style="background:none; border:none; color:var(--color-error); cursor:pointer; font-size: 14px; font-family: var(--font-ui);">Remove</button>
-                    </form>
-                </td>
-                {% endif %}
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="5" style="text-align: center; color: rgba(38,37,30,0.55);">No volunteers registered</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+<div class="table-card">
+  <table class="data-table" id="volunteers-table">
+    <thead>
+      <tr>
+        <th class="sortable">ID</th>
+        <th class="sortable">Name</th>
+        <th class="sortable">Email</th>
+        <th class="sortable">Skills</th>
+        <th class="sortable">Status</th>
+        {% if session.get('role') == 'Admin' %}<th>Actions</th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for vol in volunteers %}
+      <tr>
+        <td class="mono" style="color: var(--text-muted); font-size: 0.8rem;">#{{ vol.VolunteerID }}</td>
+        <td style="font-weight: 600;">{{ vol.Name }}</td>
+        <td style="color: var(--text-muted); font-size: 0.85rem;">{{ vol.Email }}</td>
+        <td style="font-size: 0.85rem;">{{ vol.Skills }}</td>
+        <td>
+          {% if vol.AssignmentStatus == 'Deployed' %}
+            <span class="badge badge-deployed">{{ vol.AssignmentStatus }}</span>
+          {% elif vol.AssignmentStatus == 'Standby' %}
+            <span class="badge badge-standby">{{ vol.AssignmentStatus }}</span>
+          {% else %}
+            <span class="badge badge-returned">{{ vol.AssignmentStatus }}</span>
+          {% endif %}
+        </td>
+        {% if session.get('role') == 'Admin' %}
+        <td>
+          <a href="{{ url_for('edit_volunteer', id=vol.VolunteerID) }}" class="btn-cyan" style="margin-right: 6px;">Edit</a>
+          <form method="POST" action="{{ url_for('delete_volunteer', id=vol.VolunteerID) }}" style="display:inline;">
+            <button type="submit" class="btn-danger">Remove</button>
+          </form>
+        </td>
+        {% endif %}
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 48px;">No volunteers registered</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const filterName   = document.getElementById('filter-name');
+  const filterEmail  = document.getElementById('filter-email');
+  const filterSkills = document.getElementById('filter-skills');
+  const filterStatus = document.getElementById('filter-status');
+  const tbody = document.querySelector('#volunteers-table tbody');
+
+  function filter() {
+    const name   = filterName.value.toLowerCase();
+    const email  = filterEmail.value.toLowerCase();
+    const skills = filterSkills.value.toLowerCase();
+    const status = filterStatus.value.toLowerCase();
+    tbody.querySelectorAll('tr').forEach(row => {
+      if (row.cells.length === 1) return;
+      const ok = (name   === '' || row.cells[1].innerText.toLowerCase().includes(name)) &&
+                 (email  === '' || row.cells[2].innerText.toLowerCase().includes(email)) &&
+                 (skills === '' || row.cells[3].innerText.toLowerCase().includes(skills)) &&
+                 (status === '' || row.cells[4].innerText.toLowerCase().trim() === status);
+      row.style.display = ok ? '' : 'none';
+    });
+  }
+  filterName.addEventListener('input', filter);
+  filterEmail.addEventListener('input', filter);
+  filterSkills.addEventListener('input', filter);
+  filterStatus.addEventListener('change', filter);
+});
+</script>
 {% endblock %}
