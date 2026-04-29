@@ -191,32 +191,11 @@ def signup_admin():
 def events():
     events_data = []
     statuses = []
-    search_area = request.args.get('search_area', '')
-    min_magnitude = request.args.get('min_magnitude', '')
-    max_depth = request.args.get('max_depth', '')
-    status = request.args.get('status', '')
 
     try:
         conn = get_db_connection()
         with conn.cursor() as cursor:
-            query = "SELECT * FROM Earthquake_Event WHERE 1=1"
-            params = []
-            
-            if search_area:
-                query += " AND AffectedArea LIKE %s"
-                params.append(f"%{search_area}%")
-            if min_magnitude:
-                query += " AND Magnitude >= %s"
-                params.append(min_magnitude)
-            if max_depth:
-                query += " AND Depth <= %s"
-                params.append(max_depth)
-            if status:
-                query += " AND Status = %s"
-                params.append(status)
-                
-            query += " ORDER BY Timestamp DESC"
-            cursor.execute(query, tuple(params))
+            cursor.execute("SELECT * FROM Earthquake_Event ORDER BY Timestamp DESC")
             events_data = cursor.fetchall()
             
             cursor.execute("SELECT DISTINCT Status FROM Earthquake_Event")
@@ -225,7 +204,7 @@ def events():
         conn.close()
     except Exception as e:
         flash(f"Error fetching events: {e}", "error")
-    return render_template('events.html', events=events_data, statuses=statuses, search_area=search_area, min_magnitude=min_magnitude, max_depth=max_depth, current_status=status)
+    return render_template('events.html', events=events_data, statuses=statuses)
 
 # FEATURE: Evacuation Route Tracker - READ
 # -> Users can view all evacuation routes for their zone.
