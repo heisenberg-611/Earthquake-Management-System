@@ -33,7 +33,7 @@ The system features robust Role-Based Access Control (RBAC), dividing permission
 ## 🛠️ Technology Stack
 
 - **Backend:** Python, Flask, PyMySQL, Werkzeug (Security/Hashing)
-- **Frontend:** HTML5, CSS3 (Custom Vodafone Design System), Vanilla JavaScript (Client-side sorting/filtering)
+- **Frontend:** HTML5, CSS3, Vanilla JavaScript (Client-side sorting/filtering)
 - **Database:** MySQL hosted securely on [Aiven.io](https://aiven.io/)
 - **Deployment:** Ready for deployment on [Render](https://render.com/) via Gunicorn WSGI.
 
