@@ -62,14 +62,13 @@ The global stylesheet for the entire application.
 - **Features**:
   - **Design Tokens**: Uses CSS variables (`:root`) to define a standardized color palette, typography (Inter, EB Garamond, JetBrains Mono), borders, and shadows.
   - **Component Styling**: Styles buttons (`.btn`, `.pill`), cards (`.card`), navigation (`nav`), and data tables (`.data-table`).
-  - **Vodafone Theme**: Specifically styles the welcome page (`.voda-hero`, `.voda-red-band`) with dramatic typography and vibrant accents.
 
 ### `static/script.js`
 The client-side logic handler.
 - **Purpose**: Adds dynamic interactivity to the UI without requiring page reloads from the server.
 - **Features**:
   - **Table Sorting**: Listens for clicks on table headers (`th.sortable`) and alphabetically/numerically sorts the rows in ascending or descending order.
-  - **Multi-column Filtering**: Listens to input and dropdown changes on the `/volunteers` and `/routes` pages. It dynamically hides or shows table rows based on whether the cell text matches the search criteria (e.g., searching for a specific skill or filtering by route status).
+  - **Multi-column Filtering**: Listens to input and dropdown changes on the `/volunteers` `/events` and `/routes` pages. It dynamically hides or shows table rows based on whether the cell text matches the search criteria (e.g., searching for a specific skill or filtering by route status).
 
 ### `templates/` Directory
 Contains all the HTML views using the Jinja2 templating engine.
