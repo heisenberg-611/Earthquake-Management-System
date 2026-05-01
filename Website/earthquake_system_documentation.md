@@ -54,32 +54,48 @@ This file defines the structural blueprint (schema) of the `earthquake_db`.
 
 ## 3. Frontend Layer
 
-The frontend provides the interactive user interface, heavily styled with a "Vodafone-inspired" modern design system.
+The frontend provides the interactive user interface with a modern dark-themed design system featuring glassmorphism effects and smooth animations.
 
 ### `static/style.css`
 The global stylesheet for the entire application.
 - **Purpose**: Ensures a consistent, premium, and responsive visual experience.
 - **Features**:
-  - **Design Tokens**: Uses CSS variables (`:root`) to define a standardized color palette, typography (Inter, EB Garamond, JetBrains Mono), borders, and shadows.
-  - **Component Styling**: Styles buttons (`.btn`, `.pill`), cards (`.card`), navigation (`nav`), and data tables (`.data-table`).
+  - **Design Tokens**: Uses CSS variables (`:root`) to define a standardized color palette:
+    - Backgrounds: `--bg-1: #0a0a1a`, `--bg-2: #0d1b2a`, `--bg-3: #1a1a2a`
+    - Accents: `--accent: #ff6b35`, `--accent2: #ff3366`, `--cyan: #00d4ff`
+    - Status colors: `--success: #00ff88`, `--warning: #ffcc00`, `--danger: #ff3366`
+    - Typography: **Inter** (sans-serif) and **JetBrains Mono** (monospace)
+  - **Glassmorphism**: Extensive use of `backdrop-filter: blur(20px)` with semi-transparent backgrounds (`rgba(255,255,255,0.05)`) and subtle borders
+  - **Animated Background**: Dynamic blob elements (`.blob`) with blur effects that create a moving gradient atmosphere
+  - **Component Styling**:
+    - Buttons (`.btn`) with gradient accents and hover glow effects
+    - Cards (`.card`) with glass effect and hover lift animations
+    - Navigation (`.nav`) with sticky positioning and blur backdrop
+    - Data tables (`.data-table`, `.table-card`) with glass wrapper
+    - Forms (`.form-card`, `.form-card-inner`) with consistent padding and spacing
+    - Alerts (`.alert`) with color-coded backgrounds for success/warning/danger states
+    - Filter bars (`.filter-bar`) for search functionality
+  - **Animations**: Smooth `fadeIn` transitions and hover effects throughout
 
 ### `static/script.js`
 The client-side logic handler.
 - **Purpose**: Adds dynamic interactivity to the UI without requiring page reloads from the server.
 - **Features**:
-  - **Table Sorting**: Listens for clicks on table headers (`th.sortable`) and alphabetically/numerically sorts the rows in ascending or descending order.
-  - **Multi-column Filtering**: Listens to input and dropdown changes on the `/volunteers` `/events` and `/routes` pages. It dynamically hides or shows table rows based on whether the cell text matches the search criteria (e.g., searching for a specific skill or filtering by route status).
+  - **Table Sorting**: Listens for clicks on table headers (`th.sortable`) and alphabetically/numerically sorts the rows in ascending or descending order using a custom comparer function
+  - **Multi-column Filtering**: Listens to input and dropdown changes on the `/volunteers`, `/events`, and `/routes` pages. It dynamically hides or shows table rows based on whether the cell text matches the search criteria (e.g., searching for a specific skill or filtering by route status)
+  - **DOM Ready**: Uses `DOMContentLoaded` event to ensure all elements are loaded before attaching event listeners
 
 ### `templates/` Directory
 Contains all the HTML views using the Jinja2 templating engine.
 - **Purpose**: Allows Flask to inject dynamic Python variables (like user names, database records, and flash messages) directly into the HTML before sending it to the browser.
 - **Key Files**:
-  - `base.html`: The master layout file. It contains the `<head>`, global `<nav>`, and flash message rendering. All other templates *extend* this file, keeping the code DRY (Don't Repeat Yourself).
-  - `welcome.html` & `index.html`: Landing pages.
-  - `login.html`, `signup.html`: Authentication interfaces.
-  - `admin_dashboard.html`, `user_dashboard.html`: Post-login landing hubs.
-  - `events.html`, `routes.html`, `volunteers.html`: Data tables displaying fetched records.
+  - `base.html`: The master layout file. It contains the `<head>`, global `<nav>`, animated background (`.bg-canvas` with blobs), and flash message rendering. All other templates *extend* this file, keeping the code DRY (Don't Repeat Yourself).
+  - `welcome.html` & `index.html`: Landing pages with hero sections.
+  - `login.html`, `signup.html`: Authentication interfaces with centered form cards.
+  - `admin_dashboard.html`, `user_dashboard.html`: Post-login landing hubs with statistics and quick actions.
+  - `events.html`, `routes.html`, `volunteers.html`: Data tables displaying fetched records with filter bars and sortable columns.
   - `event_form.html`, `route_form.html`, `volunteer_form.html`: Reusable forms used for both **Creating** and **Updating** records.
+  - `admin_add_volunteer.html`: Specialized form for admin volunteer management.
 
 ---
 
