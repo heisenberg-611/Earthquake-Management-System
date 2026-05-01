@@ -28,11 +28,6 @@ The system features robust Role-Based Access Control (RBAC), dividing permission
 - **Administrators** manage the entire volunteer taskforce from a high-level dashboard, updating assignment statuses (Standby, Deployed, Returned) as the crisis evolves.
 - Features dynamic client-side filtering for immediate skill-matching and deployment.
 
-### 4. Enterprise-Grade Design System
-- The user interface is built on a custom, professional design system inspired by **Vodafone's Corporate Guidelines**.
-- Features a cinematic, full-bleed dark hero layout, monumental 144px typography, and signature red pill-button calls-to-action (`#e60000`).
-- Responsive, accessible, and strictly avoids unnecessary drop shadows and gradients in favor of clean, color-blocked data presentation.
-
 ---
 
 ## 🛠️ Technology Stack
