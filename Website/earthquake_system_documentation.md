@@ -89,13 +89,14 @@ The client-side logic handler.
 Contains all the HTML views using the Jinja2 templating engine.
 - **Purpose**: Allows Flask to inject dynamic Python variables (like user names, database records, and flash messages) directly into the HTML before sending it to the browser.
 - **Key Files**:
-  - `base.html`: The master layout file. It contains the `<head>`, global `<nav>`, animated background (`.bg-canvas` with blobs), and flash message rendering. All other templates *extend* this file, keeping the code DRY (Don't Repeat Yourself).
-  - `welcome.html` & `index.html`: Landing pages with hero sections.
-  - `login.html`, `signup.html`: Authentication interfaces with centered form cards.
-  - `admin_dashboard.html`, `user_dashboard.html`: Post-login landing hubs with statistics and quick actions.
-  - `events.html`, `routes.html`, `volunteers.html`: Data tables displaying fetched records with filter bars and sortable columns.
-  - `event_form.html`, `route_form.html`, `volunteer_form.html`: Reusable forms used for both **Creating** and **Updating** records.
-  - `admin_add_volunteer.html`: Specialized form for admin volunteer management.
+  - `base.html`: The master layout file ensuring consistent UI architecture. It encapsulates the `<head>` metadata, global `<nav>` bar, animated background system (`.bg-canvas`), and flash message rendering logic. All other templates *extend* this file, strictly enforcing the DRY (Don't Repeat Yourself) principle.
+  - `welcome.html`: The main landing page with an engaging hero section introducing the platform's core capabilities and offering clear calls-to-action for authentication or dashboard access.
+  - `index.html`: A generic dashboard template displaying overarching system statistics (total events, verified incidents, volunteers, disrupted routes) that serves as a foundational layout for system overviews.
+  - `login.html`, `signup.html`: Dedicated authentication interfaces featuring centered, glassmorphic form cards for secure user credential entry and registration, including support for role-specific account creation.
+  - `admin_dashboard.html`, `user_dashboard.html`: Role-specific post-login landing hubs. The admin dashboard provides comprehensive system-wide metrics and management links, while the user dashboard focuses on relevant regional updates and the user's personal volunteer status.
+  - `events.html`, `routes.html`, `volunteers.html`: Advanced data table views for displaying fetched database records. They incorporate real-time multi-column filter bars, sortable headers, and conditional action buttons (e.g., edit/delete) depending on the user's authorization level.
+  - `event_form.html`, `route_form.html`, `volunteer_form.html`: Reusable, dynamic form interfaces utilized for both **Creating** new records and **Updating** existing ones. These templates are designed to dynamically prepopulate input fields when existing record data is passed from the backend.
+  - `admin_add_volunteer.html`: A specialized administrative form designed to simultaneously register a new User account and add them to the Volunteer roster in a single workflow.
 
 ---
 
