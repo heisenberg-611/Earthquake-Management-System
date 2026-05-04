@@ -6,7 +6,6 @@ from db import get_db_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-# Use a static SECRET_KEY in production to prevent sessions from resetting!
 app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 
 # --- Role Decorators ---
