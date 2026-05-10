@@ -125,6 +125,42 @@ def logout():
     flash("You have been logged out.", "success")
     return redirect(url_for('login'))
 
+@app.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    if 'user_id' not in session:
+        flash("You must be logged in to change your password.", "error")
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        current_password = request.form['current_password']
+        new_password = request.form['new_password']
+        confirm_password = request.form['confirm_password']
+
+        if new_password != confirm_password:
+            flash("New passwords do not match.", "error")
+            return redirect(url_for('change_password'))
+
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT Password FROM Person WHERE PersonID = %s", (session['user_id'],))
+                person = cursor.fetchone()
+                
+                if person and check_password_hash(person['Password'], current_password):
+                    hashed_pw = generate_password_hash(new_password, method='pbkdf2:sha256')
+                    cursor.execute("UPDATE Person SET Password = %s WHERE PersonID = %s", (hashed_pw, session['user_id']))
+                    conn.commit()
+                    flash("Password updated successfully!", "success")
+                    conn.close()
+                    return redirect(url_for('dashboard'))
+                else:
+                    flash("Incorrect current password.", "error")
+            conn.close()
+        except Exception as e:
+            flash(f"Database error: {e}", "error")
+
+    return render_template('change_password.html')
+
 @app.route('/signup/user', methods=['GET', 'POST'])
 def signup_user():
     if request.method == 'POST':
@@ -158,25 +194,50 @@ def signup_user():
 @admin_required
 def signup_admin():
     if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
+        if request.form.get('promote_existing') == 'true':
+            person_id = request.form.get('person_id')
+            new_password_hash = request.form.get('new_password_hash')
+            try:
+                conn = get_db_connection()
+                with conn.cursor() as cursor:
+                    if new_password_hash:
+                        cursor.execute("UPDATE Person SET Password = %s WHERE PersonID = %s", (new_password_hash, person_id))
+                    cursor.execute("INSERT INTO Admin (AdminID) VALUES (%s)", (person_id,))
+                    conn.commit()
+                    flash("Existing user has been promoted to Administrator successfully with the new password!", "success")
+                conn.close()
+                return redirect(url_for('admin_dashboard'))
+            except Exception as e:
+                flash(f"Error: {e}", "error")
+                return redirect(url_for('admin_dashboard'))
+
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
         hashed_pw = generate_password_hash(password, method='pbkdf2:sha256')
         
         try:
             conn = get_db_connection()
             with conn.cursor() as cursor:
                 cursor.execute("SELECT * FROM Person WHERE Email = %s", (email,))
-                if cursor.fetchone():
-                    flash("Email already registered.", "error")
+                existing_person = cursor.fetchone()
+                if existing_person:
+                    person_id = existing_person['PersonID']
+                    cursor.execute("SELECT * FROM Admin WHERE AdminID = %s", (person_id,))
+                    if cursor.fetchone():
+                        conn.close()
+                        return render_template('signup.html', role='Admin', prompt_already_admin=True, email=email)
+                    else:
+                        conn.close()
+                        return render_template('signup.html', role='Admin', prompt_promote=True, person_id=person_id, email=email, new_password_hash=hashed_pw)
                 else:
                     cursor.execute("INSERT INTO Person (Name, Email, Password) VALUES (%s, %s, %s)", (name, email, hashed_pw))
                     person_id = cursor.lastrowid
                     cursor.execute("INSERT INTO Admin (AdminID) VALUES (%s)", (person_id,))
                     conn.commit()
                     flash("Administrator registered successfully!", "success")
+                    conn.close()
                     return redirect(url_for('admin_dashboard'))
-            conn.close()
         except Exception as e:
             flash(f"Error: {e}", "error")
             

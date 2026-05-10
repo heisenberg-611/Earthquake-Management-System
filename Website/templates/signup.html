@@ -8,6 +8,31 @@
       <h2>{{ role }} Registration</h2>
       <p style="margin-top: 8px;">Create an account to track metrics or register as a volunteer.</p>
     </div>
+    {% if prompt_promote %}
+    <div class="form-card-inner">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <p style="margin-bottom: 15px;">The email <strong>{{ email }}</strong> is already registered in the system.</p>
+        <p>Would you like to promote this existing account to an Administrator?</p>
+      </div>
+      <form method="POST" style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+        <input type="hidden" name="promote_existing" value="true">
+        <input type="hidden" name="person_id" value="{{ person_id }}">
+        <input type="hidden" name="new_password_hash" value="{{ new_password_hash }}">
+        <button type="submit" class="btn" style="flex: 1; padding: 12px; background: linear-gradient(135deg, #0f9b0f, #22b522);">Yes, Promote to Admin</button>
+        <a href="{{ url_for('signup_admin') }}" class="btn" style="flex: 1; padding: 12px; text-align: center; text-decoration: none; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">Cancel</a>
+      </form>
+    </div>
+    {% elif prompt_already_admin %}
+    <div class="form-card-inner">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <p style="margin-bottom: 15px; font-size: 1.1rem; color: #ff6b6b;">⚠️ Admin already registered</p>
+        <p>The email <strong>{{ email }}</strong> is already associated with an Administrator account.</p>
+      </div>
+      <div style="display: flex; justify-content: center; margin-top: 20px;">
+        <a href="{{ url_for('signup_admin') }}" class="btn" style="padding: 12px 30px; text-decoration: none; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">Go Back</a>
+      </div>
+    </div>
+    {% else %}
     <div class="form-card-inner">
       <form method="POST" style="display: flex; flex-direction: column; gap: 20px;">
         <div class="form-group">
@@ -34,6 +59,7 @@
     <p style="text-align: center; margin-top: 24px; font-size: 0.875rem;">
       Already have an account? <a href="{{ url_for('login') }}">Sign in</a>
     </p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

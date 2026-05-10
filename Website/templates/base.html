@@ -36,7 +36,8 @@
           <span class="role-badge {% if session.get('role') == 'Admin' %}admin{% else %}user{% endif %}">
             {{ session.get('role') }}
           </span>
-          <a href="{{ url_for('logout') }}" class="btn-ghost" style="padding: 6px 14px; font-size: 0.8rem;">Logout</a>
+          <a href="{{ url_for('change_password') }}" class="btn-ghost" style="padding: 6px 10px; font-size: 0.8rem; margin-right: -4px;">🔑 Password</a>
+          <a href="{{ url_for('logout') }}" class="btn-ghost" style="padding: 6px 10px; font-size: 0.8rem;">Logout</a>
         </div>
       {% else %}
         <a href="{{ url_for('login') }}">Login</a>
