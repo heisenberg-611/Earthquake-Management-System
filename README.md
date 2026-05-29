@@ -7,6 +7,8 @@
 
 **TaTuBo** is a comprehensive, full-stack disaster response web application built with Python and Flask. Designed to be deployed rapidly in the critical hours following a severe seismic event, the platform facilitates immediate crisis assistance, safe evacuation routing, and coordinated volunteer deployment.
 
+![TaTuBo](https://earthquake-management-system.onrender.com/)
+
 ---
 
 ## 🌟 Key Features
